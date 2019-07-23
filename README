@@ -1,0 +1,10 @@
+Downloaded 2019-07-23 from:
+
+https://www-eu.apache.org/dist//xerces/xml-commons/
+
+$ md5sum xml-commons-resolver-1.2.tar.gz
+46d52acdb67ba60f0156043f30108766  xml-commons-resolver-1.2.tar.gz
+
+Build with:
+
+ant -f resolver.xml
