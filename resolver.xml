@@ -88,7 +88,7 @@ Also, you may need to adjust src/documentation/sitemap.xmap
 
    <echo message="Compiling..." />
 
-   <javac srcdir="${src.dir}" destdir="${build.classes.dir}" debug="true" optimize="true" deprecation="true" verbose="false">
+   <javac includeantruntime="false" srcdir="${src.dir}" destdir="${build.classes.dir}" debug="true" optimize="true" deprecation="true" verbose="false">
      <!-- <classpath> not needed since Ant already supplies these Sep-03 -sc -->
      <include name="${resolver.subdir}/*.java"/>
      <include name="${resolver.subdir}/helpers/*.java"/>
