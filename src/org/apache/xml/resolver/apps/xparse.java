@@ -73,6 +73,7 @@ import org.apache.xml.resolver.helpers.Debug;
  *
  * @version 1.0
  */
+@Deprecated
 public class xparse {
   private static Debug debug = CatalogManager.getStaticManager().debug;
 

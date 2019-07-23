@@ -316,6 +316,7 @@ public class CatalogManager {
    *
    * @deprecated No longer static; use get/set methods.
    */
+  @Deprecated
   public void ignoreMissingProperties(boolean ignore) {
     setIgnoreMissingProperties(ignore);
   }
@@ -387,6 +388,7 @@ public class CatalogManager {
    *
    * @deprecated No longer static; use get/set methods.
    */
+  @Deprecated
   public int verbosity () {
     return getVerbosity();
   }
@@ -454,6 +456,7 @@ public class CatalogManager {
    *
    * @deprecated No longer static; use get/set methods.
    */
+  @Deprecated
   public boolean relativeCatalogs () {
     return getRelativeCatalogs();
   }
@@ -535,6 +538,7 @@ public class CatalogManager {
    *
    * @deprecated No longer static; use get/set methods.
    */
+  @Deprecated
   public Vector<String> catalogFiles() {
     return getCatalogFiles();
   }
@@ -594,6 +598,7 @@ public class CatalogManager {
    *
    * @deprecated No longer static; use get/set methods.
    */
+  @Deprecated
   public boolean preferPublic () {
     return getPreferPublic();
   }
@@ -652,6 +657,7 @@ public class CatalogManager {
    *
    * @deprecated No longer static; use get/set methods.
    */
+  @Deprecated
   public boolean staticCatalog() {
     return getUseStaticCatalog();
   }
@@ -783,6 +789,7 @@ public class CatalogManager {
    *
    * @deprecated No longer static; use get/set methods.
    */
+  @Deprecated
   public boolean allowOasisXMLCatalogPI() {
     return getAllowOasisXMLCatalogPI();
   }
@@ -830,6 +837,7 @@ public class CatalogManager {
    *
    * @deprecated No longer static; use get/set methods.
    */
+  @Deprecated
   public String catalogClassName() {
     return getCatalogClassName();
   }

@@ -122,72 +122,64 @@ public class TextCatalogReader implements CatalogReader {
 
     try {
       while (true) {
-	String token = nextToken();
+	    String token = nextToken();
 
-	if (token == null) {
-	  if (unknownEntry != null) {
-	    catalog.unknownEntry(unknownEntry);
-	    unknownEntry = null;
-	  }
-	  catfile.close();
-	  catfile = null;
-	  return;
-	}
-
-	String entryToken = null;
-	if (caseSensitive) {
-	  entryToken = token;
-	} else {
-	  entryToken = token.toUpperCase();
-	}
-
-	try {
-	  int type = CatalogEntry.getEntryType(entryToken);
-	  int numArgs = CatalogEntry.getEntryArgCount(type);
-	  Vector<String> args = new Vector<String>();
-
-	  if (unknownEntry != null) {
-	    catalog.unknownEntry(unknownEntry);
-	    unknownEntry = null;
-	  }
-
-	  for (int count = 0; count < numArgs; count++) {
-	    args.addElement(nextToken());
-	  }
-
-	  catalog.addEntry(new CatalogEntry(entryToken, args));
-	} catch (CatalogException cex) {
-	  if (cex.getExceptionType() == CatalogException.INVALID_ENTRY_TYPE) {
-	    if (unknownEntry == null) {
-	      unknownEntry = new Vector<String>();
+	    if (token == null) {
+	      if (unknownEntry != null) {
+	        catalog.unknownEntry(unknownEntry);
+	        unknownEntry = null;
+	      }
+	      catfile.close();
+	      catfile = null;
+	      return;
 	    }
-	    unknownEntry.addElement(token);
-	  } else if (cex.getExceptionType() == CatalogException.INVALID_ENTRY) {
-	    catalog.getCatalogManager().debug.message(1, "Invalid catalog entry", token);
-	    unknownEntry = null;
-	  } else if (cex.getExceptionType() == CatalogException.UNENDED_COMMENT) {
-	    catalog.getCatalogManager().debug.message(1, cex.getMessage());
-	  }
-	}
+
+	    String entryToken = null;
+	    if (caseSensitive) {
+	      entryToken = token;
+	    } else {
+	      entryToken = token.toUpperCase();
+	    }
+
+	    try {
+	      int type = CatalogEntry.getEntryType(entryToken);
+	      int numArgs = CatalogEntry.getEntryArgCount(type);
+	      Vector<String> args = new Vector<String>();
+
+	      if (unknownEntry != null) {
+	        catalog.unknownEntry(unknownEntry);
+	        unknownEntry = null;
+	      }
+
+	      for (int count = 0; count < numArgs; count++) {
+	        args.addElement(nextToken());
+	      }
+
+	      catalog.addEntry(new CatalogEntry(entryToken, args));
+	    } catch (CatalogException cex) {
+	      if (cex.getExceptionType() == CatalogException.INVALID_ENTRY_TYPE) {
+	        if (unknownEntry == null) {
+	          unknownEntry = new Vector<String>();
+	        }
+	        unknownEntry.addElement(token);
+	      } else if (cex.getExceptionType() == CatalogException.INVALID_ENTRY) {
+	        catalog.getCatalogManager().debug.message(1, "Invalid catalog entry", token);
+	        unknownEntry = null;
+	      } else if (cex.getExceptionType() == CatalogException.UNENDED_COMMENT) {
+	        catalog.getCatalogManager().debug.message(1, cex.getMessage());
+	      }
+	    }
       }
     } catch (CatalogException cex2) {
       if (cex2.getExceptionType() == CatalogException.UNENDED_COMMENT) {
-	catalog.getCatalogManager().debug.message(1, cex2.getMessage());
+	    catalog.getCatalogManager().debug.message(1, cex2.getMessage());
       }
     }
-  }
-
-  /**
-     * The destructor.
-     *
-     * <p>Makes sure the catalog file is closed.</p>
-     */
-  protected void finalize() {
     if (catfile != null) {
       try {
-	catfile.close();
+	    catfile.close();
       } catch (IOException e) {
-	// whatever...
+	    // whatever...
       }
     }
     catfile = null;

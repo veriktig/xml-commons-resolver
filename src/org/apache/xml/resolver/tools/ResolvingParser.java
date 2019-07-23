@@ -61,6 +61,7 @@ import org.apache.xml.resolver.helpers.FileURL;
  *
  * @version 1.0
  */
+@Deprecated
 public class ResolvingParser
   implements Parser, DTDHandler, DocumentHandler, EntityResolver {
   /** Make the parser Namespace aware? */
