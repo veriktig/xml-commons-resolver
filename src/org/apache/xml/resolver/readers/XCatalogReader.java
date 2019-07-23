@@ -1,3 +1,4 @@
+// Copyright 2019 Fred Gotwald. Modifications to original.
 // XCatalogReader.java - Read XML Catalog files
 
 /*
@@ -107,15 +108,15 @@ public class XCatalogReader extends SAXCatalogReader implements SAXCatalogParser
     throws SAXException {
 
     int entryType = -1;
-    Vector entryArgs = new Vector();
+    Vector<String> entryArgs = new Vector<String>();
 
     if (localName.equals("Base")) {
-      entryType = catalog.BASE;
+      entryType = Catalog.BASE;
       entryArgs.add(atts.getValue("HRef"));
 
       debug.message(4, "Base", atts.getValue("HRef"));
     } else if (localName.equals("Delegate")) {
-      entryType = catalog.DELEGATE_PUBLIC;
+      entryType = Catalog.DELEGATE_PUBLIC;
       entryArgs.add(atts.getValue("PublicID"));
       entryArgs.add(atts.getValue("HRef"));
 
@@ -123,12 +124,12 @@ public class XCatalogReader extends SAXCatalogReader implements SAXCatalogParser
 		    PublicId.normalize(atts.getValue("PublicID")),
 		    atts.getValue("HRef"));
     } else if (localName.equals("Extend")) {
-      entryType = catalog.CATALOG;
+      entryType = Catalog.CATALOG;
       entryArgs.add(atts.getValue("HRef"));
 
       debug.message(4, "Extend", atts.getValue("HRef"));
     } else if (localName.equals("Map")) {
-      entryType = catalog.PUBLIC;
+      entryType = Catalog.PUBLIC;
       entryArgs.add(atts.getValue("PublicID"));
       entryArgs.add(atts.getValue("HRef"));
 
@@ -136,7 +137,7 @@ public class XCatalogReader extends SAXCatalogReader implements SAXCatalogParser
 		    PublicId.normalize(atts.getValue("PublicID")),
 		    atts.getValue("HRef"));
     } else if (localName.equals("Remap")) {
-      entryType = catalog.SYSTEM;
+      entryType = Catalog.SYSTEM;
       entryArgs.add(atts.getValue("SystemID"));
       entryArgs.add(atts.getValue("HRef"));
 

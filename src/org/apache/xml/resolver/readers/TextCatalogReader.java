@@ -1,3 +1,4 @@
+// Copyright 2019 Fred Gotwald. Modifications to original.
 // TextCatalogReader.java - Read text/plain Catalog files
 
 /*
@@ -58,7 +59,7 @@ public class TextCatalogReader implements CatalogReader {
    * Token stack. Recognizing an unexpected catalog entry requires
    * the ability to "push back" a token.
    */
-  protected Stack tokenStack = new Stack();
+  protected Stack<?> tokenStack = new Stack<Object>();
 
   /** The current position on the lookahead stack */
   protected int top = -1;
@@ -117,7 +118,7 @@ public class TextCatalogReader implements CatalogReader {
       return;
     }
 
-    Vector unknownEntry = null;
+    Vector<String> unknownEntry = null;
 
     try {
       while (true) {
@@ -143,7 +144,7 @@ public class TextCatalogReader implements CatalogReader {
 	try {
 	  int type = CatalogEntry.getEntryType(entryToken);
 	  int numArgs = CatalogEntry.getEntryArgCount(type);
-	  Vector args = new Vector();
+	  Vector<String> args = new Vector<String>();
 
 	  if (unknownEntry != null) {
 	    catalog.unknownEntry(unknownEntry);
@@ -158,7 +159,7 @@ public class TextCatalogReader implements CatalogReader {
 	} catch (CatalogException cex) {
 	  if (cex.getExceptionType() == CatalogException.INVALID_ENTRY_TYPE) {
 	    if (unknownEntry == null) {
-	      unknownEntry = new Vector();
+	      unknownEntry = new Vector<String>();
 	    }
 	    unknownEntry.addElement(token);
 	  } else if (cex.getExceptionType() == CatalogException.INVALID_ENTRY) {

@@ -1,3 +1,4 @@
+// Copyright 2019 Fred Gotwald. Modifications to original.
 // Catalog.java - Represents OASIS Open Catalog files.
 
 /*
@@ -259,7 +260,7 @@ public class Catalog {
   protected URL catalogCwd;
 
   /** The catalog entries currently known to the system. */
-  protected Vector catalogEntries = new Vector();
+  protected Vector<CatalogEntry> catalogEntries = new Vector<CatalogEntry>();
 
   /** The default initial override setting. */
   protected boolean default_override = true;
@@ -278,7 +279,7 @@ public class Catalog {
    * @see #loadSystemCatalogs
    * @see #localCatalogFiles
    */
-  protected Vector catalogFiles = new Vector();
+  protected Vector<String> catalogFiles = new Vector<String>();
 
   /**
    * A vector of catalog files constructed during processing of
@@ -297,7 +298,7 @@ public class Catalog {
    *
    * @see #catalogFiles
    */
-  protected Vector localCatalogFiles = new Vector();
+  protected Vector<String> localCatalogFiles = new Vector<String>();
 
   /**
    * A vector of Catalogs.
@@ -316,7 +317,7 @@ public class Catalog {
    * Catalog object is placed in the vector, effectively caching it
    * for the next query.</p>
    */
-  protected Vector catalogs = new Vector();
+  protected Vector<Object> catalogs = new Vector<Object>();
 
   /**
    * A vector of DELEGATE* Catalog entries constructed during
@@ -333,7 +334,7 @@ public class Catalog {
    * <code>catalogEntries</code> vector. This assures that matching
    * PUBLIC keywords are encountered before DELEGATE* entries.</p>
    */
-  protected Vector localDelegate = new Vector();
+  protected Vector<CatalogEntry> localDelegate = new Vector<CatalogEntry>();
 
   /**
    * A hash of CatalogReaders.
@@ -342,7 +343,7 @@ public class Catalog {
    * vector. This allows the Catalog to quickly locate the reader
    * for a particular MIME type.</p>
    */
-  protected Hashtable readerMap = new Hashtable();
+  protected Hashtable<String, Integer> readerMap = new Hashtable<String, Integer>();
 
   /**
    * A vector of CatalogReaders.
@@ -352,7 +353,7 @@ public class Catalog {
    * the MIME type is unknown, each reader is attempted in turn until
    * one succeeds.</p>
    */
-  protected Vector readerArr = new Vector();
+  protected Vector<CatalogReader> readerArr = new Vector<CatalogReader>();
 
   /**
    * Constructs an empty Catalog.
@@ -441,7 +442,7 @@ public class Catalog {
       readerArr.set(pos.intValue(), reader);
     } else {
       readerArr.add(reader);
-      Integer pos = new Integer(readerArr.size()-1);
+      Integer pos = Integer.valueOf(readerArr.size()-1);
       readerMap.put(mimeType, pos);
     }
   }
@@ -457,14 +458,14 @@ public class Catalog {
    */
   protected void copyReaders(Catalog newCatalog) {
     // Have to copy the readers in the right order...convert hash to arr
-    Vector mapArr = new Vector(readerMap.size());
+    Vector<String> mapArr = new Vector<String>(readerMap.size());
 
     // Pad the mapArr out to the right length
     for (int count = 0; count < readerMap.size(); count++) {
       mapArr.add(null);
     }
 
-    Enumeration en = readerMap.keys();
+    Enumeration<String> en = readerMap.keys();
     while (en.hasMoreElements()) {
       String mimeType = (String) en.nextElement();
       Integer pos = (Integer) readerMap.get(mimeType);
@@ -496,7 +497,7 @@ public class Catalog {
     String catalogClass = this.getClass().getName();
 
     try {
-      Catalog c = (Catalog) (Class.forName(catalogClass).newInstance());
+      Catalog c = (Catalog) (Class.forName(catalogClass).getDeclaredConstructor().newInstance());
       c.setCatalogManager(catalogManager);
       copyReaders(c);
       return c;
@@ -554,10 +555,10 @@ public class Catalog {
   public void loadSystemCatalogs()
     throws MalformedURLException, IOException {
 
-    Vector catalogs = catalogManager.getCatalogFiles();
+    Vector<?> catalogs = catalogManager.getCatalogFiles();
     if (catalogs != null) {
       for (int count = 0; count < catalogs.size(); count++) {
-	catalogFiles.addElement(catalogs.elementAt(count));
+	catalogFiles.addElement((String)catalogs.elementAt(count));
       }
     }
 
@@ -711,8 +712,8 @@ public class Catalog {
     if (!localCatalogFiles.isEmpty()) {
       // Move all the localCatalogFiles into the front of
       // the catalogFiles queue
-      Vector newQueue = new Vector();
-      Enumeration q = localCatalogFiles.elements();
+      Vector<String> newQueue = new Vector<String>();
+      Enumeration<String> q = localCatalogFiles.elements();
       while (q.hasMoreElements()) {
 	newQueue.addElement(q.nextElement());
       }
@@ -731,7 +732,7 @@ public class Catalog {
     // single catalog already parsed included some delegate
     // entries? Make sure they don't get lost.
     if (catalogFiles.isEmpty() && !localDelegate.isEmpty()) {
-      Enumeration e = localDelegate.elements();
+      Enumeration<CatalogEntry> e = localDelegate.elements();
       while (e.hasMoreElements()) {
 	catalogEntries.addElement(e.nextElement());
       }
@@ -766,8 +767,8 @@ public class Catalog {
       if (!localCatalogFiles.isEmpty()) {
 	// Move all the localCatalogFiles into the front of
 	// the catalogFiles queue
-	Vector newQueue = new Vector();
-	Enumeration q = localCatalogFiles.elements();
+	Vector<String> newQueue = new Vector<String>();
+	Enumeration<String> q = localCatalogFiles.elements();
 	while (q.hasMoreElements()) {
 	  newQueue.addElement(q.nextElement());
 	}
@@ -783,7 +784,7 @@ public class Catalog {
       }
 
       if (!localDelegate.isEmpty()) {
-	Enumeration e = localDelegate.elements();
+	Enumeration<CatalogEntry> e = localDelegate.elements();
 	while (e.hasMoreElements()) {
 	  catalogEntries.addElement(e.nextElement());
 	}
@@ -806,8 +807,6 @@ public class Catalog {
    */
   protected synchronized void parseCatalogFile(String fileName)
     throws MalformedURLException, IOException, CatalogException {
-
-    CatalogEntry entry;
 
     // The base-base is the cwd. If the catalog file is specified
     // with a relative path, this assures that it gets resolved
@@ -1098,7 +1097,7 @@ public class Catalog {
    * <p>This method exists to allow subclasses to deal with unknown
    * entry types.</p>
    */
-  public void unknownEntry(Vector strings) {
+  public void unknownEntry(Vector<?> strings) {
     if (strings != null && strings.size() > 0) {
       String keyword = (String) strings.elementAt(0);
       catalogManager.debug.message(2, "Unrecognized token parsing catalog", keyword);
@@ -1154,7 +1153,7 @@ public class Catalog {
     }
 
     // Parse all the DELEGATE catalogs
-    Enumeration en = catalogEntries.elements();
+    Enumeration<CatalogEntry> en = catalogEntries.elements();
     while (en.hasMoreElements()) {
       CatalogEntry e = (CatalogEntry) en.nextElement();
       if (e.getEntryType() == DELEGATE_PUBLIC
@@ -1230,7 +1229,7 @@ public class Catalog {
 
     // If there's a DOCTYPE entry in this catalog, use it
     boolean over = default_override;
-    Enumeration en = catalogEntries.elements();
+    Enumeration<CatalogEntry> en = catalogEntries.elements();
     while (en.hasMoreElements()) {
       CatalogEntry e = (CatalogEntry) en.nextElement();
       if (e.getEntryType() == OVERRIDE) {
@@ -1268,7 +1267,7 @@ public class Catalog {
 
     catalogManager.debug.message(3, "resolveDocument");
 
-    Enumeration en = catalogEntries.elements();
+    Enumeration<CatalogEntry> en = catalogEntries.elements();
     while (en.hasMoreElements()) {
       CatalogEntry e = (CatalogEntry) en.nextElement();
       if (e.getEntryType() == DOCUMENT) {
@@ -1343,7 +1342,7 @@ public class Catalog {
 
     // If there's a ENTITY entry in this catalog, use it
     boolean over = default_override;
-    Enumeration en = catalogEntries.elements();
+    Enumeration<CatalogEntry> en = catalogEntries.elements();
     while (en.hasMoreElements()) {
       CatalogEntry e = (CatalogEntry) en.nextElement();
       if (e.getEntryType() == OVERRIDE) {
@@ -1429,7 +1428,7 @@ public class Catalog {
 
     // If there's a NOTATION entry in this catalog, use it
     boolean over = default_override;
-    Enumeration en = catalogEntries.elements();
+    Enumeration<CatalogEntry> en = catalogEntries.elements();
     while (en.hasMoreElements()) {
       CatalogEntry e = (CatalogEntry) en.nextElement();
       if (e.getEntryType() == OVERRIDE) {
@@ -1588,7 +1587,7 @@ public class Catalog {
 
     // If there's a PUBLIC entry in this catalog, use it
     boolean over = default_override;
-    Enumeration en = catalogEntries.elements();
+    Enumeration<CatalogEntry> en = catalogEntries.elements();
     while (en.hasMoreElements()) {
       CatalogEntry e = (CatalogEntry) en.nextElement();
       if (e.getEntryType() == OVERRIDE) {
@@ -1607,7 +1606,7 @@ public class Catalog {
     // If there's a DELEGATE_PUBLIC entry in this catalog, use it
     over = default_override;
     en = catalogEntries.elements();
-    Vector delCats = new Vector();
+    Vector<String> delCats = new Vector<String>();
     while (en.hasMoreElements()) {
       CatalogEntry e = (CatalogEntry) en.nextElement();
       if (e.getEntryType() == OVERRIDE) {
@@ -1628,7 +1627,7 @@ public class Catalog {
     }
 
     if (delCats.size() > 0) {
-      Enumeration enCats = delCats.elements();
+      Enumeration<String> enCats = delCats.elements();
 
       if (catalogManager.debug.getDebug() > 1) {
 	catalogManager.debug.message(2, "Switching to delegated catalog(s):");
@@ -1714,7 +1713,7 @@ public class Catalog {
 
     String osname = System.getProperty("os.name");
     boolean windows = (osname.indexOf("Windows") >= 0);
-    Enumeration en = catalogEntries.elements();
+    Enumeration<CatalogEntry> en = catalogEntries.elements();
     while (en.hasMoreElements()) {
       CatalogEntry e = (CatalogEntry) en.nextElement();
       if (e.getEntryType() == SYSTEM
@@ -1779,7 +1778,7 @@ public class Catalog {
 
     // If there's a DELEGATE_SYSTEM entry in this catalog, use it
     en = catalogEntries.elements();
-    Vector delCats = new Vector();
+    Vector<String> delCats = new Vector<String>();
     while (en.hasMoreElements()) {
       CatalogEntry e = (CatalogEntry) en.nextElement();
 
@@ -1795,7 +1794,7 @@ public class Catalog {
     }
 
     if (delCats.size() > 0) {
-      Enumeration enCats = delCats.elements();
+      Enumeration<String> enCats = delCats.elements();
 
       if (catalogManager.debug.getDebug() > 1) {
 	catalogManager.debug.message(2, "Switching to delegated catalog(s):");
@@ -1874,7 +1873,7 @@ public class Catalog {
    */
   protected String resolveLocalURI(String uri)
     throws MalformedURLException, IOException {
-    Enumeration en = catalogEntries.elements();
+    Enumeration<CatalogEntry> en = catalogEntries.elements();
     while (en.hasMoreElements()) {
       CatalogEntry e = (CatalogEntry) en.nextElement();
       if (e.getEntryType() == URI
@@ -1937,7 +1936,7 @@ public class Catalog {
 
     // If there's a DELEGATE_URI entry in this catalog, use it
     en = catalogEntries.elements();
-    Vector delCats = new Vector();
+    Vector<String> delCats = new Vector<String>();
     while (en.hasMoreElements()) {
       CatalogEntry e = (CatalogEntry) en.nextElement();
 
@@ -1953,7 +1952,7 @@ public class Catalog {
     }
 
     if (delCats.size() > 0) {
-      Enumeration enCats = delCats.elements();
+      Enumeration<String> enCats = delCats.elements();
 
       if (catalogManager.debug.getDebug() > 1) {
 	catalogManager.debug.message(2, "Switching to delegated catalog(s):");
@@ -2184,7 +2183,7 @@ public class Catalog {
     int pos = 0;
     String partial = entry.getEntryArg(0);
 
-    Enumeration local = localDelegate.elements();
+    Enumeration<CatalogEntry> local = localDelegate.elements();
     while (local.hasMoreElements()) {
       CatalogEntry dpe = (CatalogEntry) local.nextElement();
       String dp = dpe.getEntryArg(0);

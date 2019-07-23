@@ -1,3 +1,4 @@
+// Copyright 2019 Fred Gotwald. Modifications to original.
 // ResolvingXMLFilter.java - An XMLFilter that performs catalog resolution
 
 /*
@@ -70,9 +71,6 @@ public class ResolvingXMLFilter extends XMLFilterImpl {
 
   /** Are we in the prolog? Is an oasis-xml-catalog PI valid now? */
   private boolean allowXMLCatalogPI = false;
-
-  /** Has an oasis-xml-catalog PI been seen? */
-  private boolean oasisXMLCatalogPI = false;
 
   /** The base URI of the input document, if known. */
   private URL baseURL = null;
@@ -288,8 +286,6 @@ public class ResolvingXMLFilter extends XMLFilterImpl {
 	  if (catalog != null) {
 	    try {
 	      catalogManager.debug.message(4,"oasis-xml-catalog", catalog.toString());
-	      oasisXMLCatalogPI = true;
-
 	      if (piCatalogResolver == null) {
 		piCatalogResolver = new CatalogResolver(true);
 	      }

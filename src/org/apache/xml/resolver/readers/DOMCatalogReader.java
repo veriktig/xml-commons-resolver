@@ -1,3 +1,4 @@
+// Copyright 2019 Fred Gotwald. Modifications to original.
 // DOMCatalogReader.java - Read XML Catalog files
 
 /*
@@ -22,6 +23,7 @@ package org.apache.xml.resolver.readers;
 import java.util.Hashtable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.MalformedURLException;
@@ -77,7 +79,7 @@ public class DOMCatalogReader implements CatalogReader {
    * or "{namespaceuri}elementname". The former is used if the
    * namespace URI is null.</p>
    */
-  protected Hashtable namespaceMap = new Hashtable();
+  protected Hashtable<String, String> namespaceMap = new Hashtable<String, String>();
 
   /**
    * Add a new parser to the reader.
@@ -196,7 +198,7 @@ public class DOMCatalogReader implements CatalogReader {
     DOMCatalogParser domParser = null;
 
     try {
-      domParser = (DOMCatalogParser) Class.forName(domParserClass).newInstance();
+      domParser = (DOMCatalogParser) Class.forName(domParserClass).getDeclaredConstructor().newInstance();
     } catch (ClassNotFoundException cnfe) {
       catalog.getCatalogManager().debug.message(1, "Cannot load XML Catalog Parser class", domParserClass);
       throw new CatalogException(CatalogException.UNPARSEABLE);
@@ -209,7 +211,19 @@ public class DOMCatalogReader implements CatalogReader {
     } catch (ClassCastException cce ) {
       catalog.getCatalogManager().debug.message(1, "Cannot cast XML Catalog Parser class", domParserClass);
       throw new CatalogException(CatalogException.UNPARSEABLE);
-    }
+    } catch (IllegalArgumentException e) {
+      catalog.getCatalogManager().debug.message(1, "Illegal argument to XML Catalog Parser class", domParserClass);
+      throw new CatalogException(CatalogException.UNPARSEABLE);
+	} catch (InvocationTargetException e) {
+		catalog.getCatalogManager().debug.message(1, "Invocation target error in XML Catalog Parser class", domParserClass);
+	  throw new CatalogException(CatalogException.UNPARSEABLE);
+	} catch (NoSuchMethodException e) {
+		catalog.getCatalogManager().debug.message(1, "No such method in XML Catalog Parser class", domParserClass);
+	  throw new CatalogException(CatalogException.UNPARSEABLE);
+	} catch (SecurityException e) {
+		catalog.getCatalogManager().debug.message(1, "Security error on XML Catalog Parser class", domParserClass);
+	  throw new CatalogException(CatalogException.UNPARSEABLE);
+	}
 
     Node node = root.getFirstChild();
     while (node != null) {

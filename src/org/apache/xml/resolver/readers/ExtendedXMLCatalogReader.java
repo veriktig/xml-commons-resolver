@@ -1,3 +1,4 @@
+// Copyright 2019 Fred Gotwald. Modifications to original.
 // ExtendedXMLCatalogReader.java - Read XML Catalog files
 
 /*
@@ -26,7 +27,6 @@ import org.apache.xml.resolver.CatalogEntry;
 import org.apache.xml.resolver.CatalogException;
 
 import org.xml.sax.*;
-import org.w3c.dom.*;
 
 /**
  * Parse Extended OASIS Entity Resolution Technical Committee 
@@ -69,7 +69,7 @@ public class ExtendedXMLCatalogReader extends OASISXMLCatalogReader {
     super.startElement(namespaceURI, localName, qName, atts);
 
     int entryType = -1;
-    Vector entryArgs = new Vector();
+    Vector<String> entryArgs = new Vector<String>();
 
     if (namespaceURI != null && extendedNamespaceName.equals(namespaceURI)
 	&& !inExtension) {
@@ -95,7 +95,7 @@ public class ExtendedXMLCatalogReader extends OASISXMLCatalogReader {
 	}
 
 	entryType = -1;
-	entryArgs = new Vector();
+	entryArgs = new Vector<String>();
       } else {
 	baseURIStack.push(baseURIStack.peek());
       }
@@ -153,7 +153,7 @@ public class ExtendedXMLCatalogReader extends OASISXMLCatalogReader {
     boolean inExtension = inExtensionNamespace();
 
     int entryType = -1;
-    Vector entryArgs = new Vector();
+    Vector<String> entryArgs = new Vector<String>();
 
     if (namespaceURI != null
 	&& (extendedNamespaceName.equals(namespaceURI))
@@ -163,7 +163,7 @@ public class ExtendedXMLCatalogReader extends OASISXMLCatalogReader {
       String baseURI = (String) baseURIStack.peek();
 
       if (!baseURI.equals(popURI)) {
-	entryType = catalog.BASE;
+	entryType = Catalog.BASE;
 	entryArgs.add(baseURI);
 
 	debug.message(4, "(reset) xml:base", baseURI);

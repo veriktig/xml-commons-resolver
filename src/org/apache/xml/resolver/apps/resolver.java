@@ -1,3 +1,4 @@
+// Copyright 2019 Fred Gotwald. Modifications to original.
 // resolver.java - A simple command-line test tool for the resolver
 
 /*
@@ -79,7 +80,7 @@ public class resolver {
     throws FileNotFoundException, IOException {
 
     int     debuglevel   = 0;
-    Vector  catalogFiles = new Vector();
+    Vector<String>  catalogFiles = new Vector<String>();
     int     resType      = 0;
     String  resTypeStr   = null;
     String  name         = null;

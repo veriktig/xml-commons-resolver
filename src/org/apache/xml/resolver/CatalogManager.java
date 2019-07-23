@@ -1,3 +1,4 @@
+// Copyright 2019 Fred Gotwald. Modifications to original.
 // CatalogManager.java - Access CatalogManager.properties
 
 /*
@@ -270,7 +271,7 @@ public class CatalogManager {
 	String verbStr = resources.getString("verbosity");
 	int verb = Integer.parseInt(verbStr.trim());
 	debug.setDebug(verb);
-	verbosity = new Integer(verb);
+	verbosity = Integer.valueOf(verb);
       } catch (Exception e) {
 	// nop
       }
@@ -356,7 +357,7 @@ public class CatalogManager {
     // if the user hasn't already set the default debug level.
     if (verbosity == null) {
       debug.setDebug(verb);
-      verbosity = new Integer(verb);
+      verbosity = Integer.valueOf(verb);
     }
 
     return verb;
@@ -367,7 +368,7 @@ public class CatalogManager {
    */
   public int getVerbosity() {
     if (verbosity == null) {
-      verbosity = new Integer(queryVerbosity());
+      verbosity = Integer.valueOf(queryVerbosity());
     }
 
     return verbosity.intValue();
@@ -377,7 +378,7 @@ public class CatalogManager {
    * Set the current verbosity.
    */
   public void setVerbosity (int verbosity) {
-    this.verbosity = new Integer(verbosity);
+    this.verbosity = Integer.valueOf(verbosity);
     debug.setDebug(verbosity);
   }
 
@@ -433,7 +434,7 @@ public class CatalogManager {
    */
   public boolean getRelativeCatalogs () {
     if (relativeCatalogs == null) {
-      relativeCatalogs = new Boolean(queryRelativeCatalogs());
+      relativeCatalogs = Boolean.valueOf(queryRelativeCatalogs());
     }
 
     return relativeCatalogs.booleanValue();
@@ -445,7 +446,7 @@ public class CatalogManager {
    * @see #getRelativeCatalogs()
    */
   public void setRelativeCatalogs (boolean relative) {
-    relativeCatalogs = new Boolean(relative);
+    relativeCatalogs = Boolean.valueOf(relative);
   }
 
   /**
@@ -492,13 +493,13 @@ public class CatalogManager {
    * @return A vector of the catalog file names or null if no catalogs
    * are available in the properties.
    */
-  public Vector getCatalogFiles() {
+  public Vector<String> getCatalogFiles() {
     if (catalogFiles == null) {
       catalogFiles = queryCatalogFiles();
     }
 
     StringTokenizer files = new StringTokenizer(catalogFiles, ";");
-    Vector catalogs = new Vector();
+    Vector<String> catalogs = new Vector<String>();
     while (files.hasMoreTokens()) {
       String catalogFile = files.nextToken();
       URL absURI = null;
@@ -534,7 +535,7 @@ public class CatalogManager {
    *
    * @deprecated No longer static; use get/set methods.
    */
-  public Vector catalogFiles() {
+  public Vector<String> catalogFiles() {
     return getCatalogFiles();
   }
 
@@ -574,7 +575,7 @@ public class CatalogManager {
    */
   public boolean getPreferPublic () {
     if (preferPublic == null) {
-      preferPublic = new Boolean(queryPreferPublic());
+      preferPublic = Boolean.valueOf(queryPreferPublic());
     }
     return preferPublic.booleanValue();
   }
@@ -583,7 +584,7 @@ public class CatalogManager {
    * Set the prefer public setting.
    */
   public void setPreferPublic (boolean preferPublic) {
-    this.preferPublic = new Boolean(preferPublic);
+    this.preferPublic = Boolean.valueOf(preferPublic);
   }
 
   /**
@@ -633,7 +634,7 @@ public class CatalogManager {
    */
   public boolean getUseStaticCatalog() {
     if (useStaticCatalog == null) {
-      useStaticCatalog = new Boolean(queryUseStaticCatalog());
+      useStaticCatalog = Boolean.valueOf(queryUseStaticCatalog());
     }
 
     return useStaticCatalog.booleanValue();
@@ -643,7 +644,7 @@ public class CatalogManager {
    * Set the use static catalog setting.
    */
   public void setUseStaticCatalog(boolean useStatic) {
-    useStaticCatalog = new Boolean(useStatic);
+    useStaticCatalog = Boolean.valueOf(useStatic);
   }
 
   /**
@@ -664,7 +665,7 @@ public class CatalogManager {
     Catalog catalog = staticCatalog;
 
     if (useStaticCatalog == null) {
-      useStaticCatalog = new Boolean(getUseStaticCatalog());
+      useStaticCatalog = Boolean.valueOf(getUseStaticCatalog());
     }
 
     if (catalog == null || !useStaticCatalog.booleanValue()) {
@@ -676,7 +677,7 @@ public class CatalogManager {
 	  catalog = new Catalog();
 	} else {
 	  try {
-	    catalog = (Catalog) Class.forName(catalogClassName).newInstance();
+	    catalog = (Catalog) Class.forName(catalogClassName).getDeclaredConstructor().newInstance();
 	  } catch (ClassNotFoundException cnfe) {
 	    debug.message(1,"Catalog class named '"
 			  + catalogClassName
@@ -715,7 +716,7 @@ public class CatalogManager {
     Catalog catalog = staticCatalog;
 
     if (useStaticCatalog == null) {
-      useStaticCatalog = new Boolean(getUseStaticCatalog());
+      useStaticCatalog = Boolean.valueOf(getUseStaticCatalog());
     }
 
     if (catalog == null || !useStaticCatalog.booleanValue()) {
@@ -764,7 +765,7 @@ public class CatalogManager {
    */
   public boolean getAllowOasisXMLCatalogPI () {
     if (oasisXMLCatalogPI == null) {
-      oasisXMLCatalogPI = new Boolean(queryAllowOasisXMLCatalogPI());
+      oasisXMLCatalogPI = Boolean.valueOf(queryAllowOasisXMLCatalogPI());
     }
 
     return oasisXMLCatalogPI.booleanValue();
@@ -774,7 +775,7 @@ public class CatalogManager {
    * Set the XML Catalog PI setting
    */
   public void setAllowOasisXMLCatalogPI(boolean allowPI) {
-    oasisXMLCatalogPI = new Boolean(allowPI);
+    oasisXMLCatalogPI = Boolean.valueOf(allowPI);
   }
 
   /**

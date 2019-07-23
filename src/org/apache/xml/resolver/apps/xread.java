@@ -1,3 +1,4 @@
+// Copyright 2019 Fred Gotwald. Modifications to original.
 // xread.java - A simple command-line XML parser
 
 /*
@@ -25,10 +26,6 @@ import java.util.Vector;
 import java.util.Date;
 
 import org.xml.sax.*;
-import org.xml.sax.helpers.*;
-
-import javax.xml.parsers.*;
-
 import org.apache.xml.resolver.tools.ResolvingXMLReader;
 import org.apache.xml.resolver.Catalog;
 import org.apache.xml.resolver.CatalogManager;
@@ -91,7 +88,7 @@ public class xread
     boolean useSchema  = false;
     boolean showWarnings = (debuglevel > 2);
     boolean showErrors = true;
-    Vector catalogFiles = new Vector();
+    Vector<String> catalogFiles = new Vector<String>();
 
     for (int i=0; i<args.length; i++) {
       if (args[i].equals("-c")) {

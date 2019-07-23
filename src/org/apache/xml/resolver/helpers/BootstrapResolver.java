@@ -1,3 +1,4 @@
+// Copyright 2019 Fred Gotwald. Modifications to original.
 // BootstrapResolver.java - Resolve entities and URIs internally
 
 /*
@@ -66,13 +67,13 @@ public class BootstrapResolver implements EntityResolver, URIResolver {
   public static final String xCatalogPubId = "-//DTD XCatalog//EN";
 
   /** Private hash used for public identifiers. */
-  private Hashtable publicMap = new Hashtable();
+  private Hashtable<String, String> publicMap = new Hashtable<String, String>();
 
   /** Private hash used for system identifiers. */
-  private Hashtable systemMap = new Hashtable();
+  private Hashtable<String, String> systemMap = new Hashtable<String, String>();
 
   /** Private hash used for URIs. */
-  private Hashtable uriMap = new Hashtable();
+  private Hashtable<String, String> uriMap = new Hashtable<String, String>();
 
   /** Constructor. */
   public BootstrapResolver() {
@@ -143,11 +144,9 @@ public class BootstrapResolver implements EntityResolver, URIResolver {
     throws TransformerException {
 
     String uri = href;
-    String fragment = null;
     int hashPos = href.indexOf("#");
     if (hashPos >= 0) {
       uri = href.substring(0, hashPos);
-      fragment = href.substring(hashPos+1);
     }
 
     String result = null;

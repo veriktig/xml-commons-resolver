@@ -1,3 +1,4 @@
+// Copyright 2019 Fred Gotwald. Modifications to original.
 // SAXCatalogReader.java - Read XML Catalog files
 
 /*
@@ -23,6 +24,7 @@ import java.util.Hashtable;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.MalformedURLException;
@@ -32,14 +34,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
 
-import org.xml.sax.AttributeList;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.DocumentHandler;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
-import org.xml.sax.Parser;
+import org.xml.sax.XMLReader;
 import org.xml.sax.SAXException;
 
 import org.apache.xml.resolver.Catalog;
@@ -76,7 +76,7 @@ import org.apache.xml.resolver.helpers.Debug;
  *
  * @version 1.0
  */
-public class SAXCatalogReader implements CatalogReader, ContentHandler, DocumentHandler {
+public class SAXCatalogReader implements CatalogReader, ContentHandler {
   /** The SAX Parser Factory */
   protected SAXParserFactory parserFactory = null;
 
@@ -90,7 +90,7 @@ public class SAXCatalogReader implements CatalogReader, ContentHandler, Document
      * or "{namespaceuri}elementname". The former is used if the
      * namespace URI is null.</p>
      */
-  protected Hashtable namespaceMap = new Hashtable();
+  protected Hashtable<String, String> namespaceMap = new Hashtable<String, String>();
 
   /** The parser in use for the current catalog. */
   private SAXCatalogParser saxParser = null;
@@ -242,20 +242,20 @@ public class SAXCatalogReader implements CatalogReader, ContentHandler, Document
 
     try {
       if (parserFactory != null) {
-	SAXParser parser = parserFactory.newSAXParser();
-	SAXParserHandler spHandler = new SAXParserHandler();
-	spHandler.setContentHandler(this);
-	if (bResolver != null) {
-	  spHandler.setEntityResolver(bResolver);
-	}
-	parser.parse(new InputSource(is), spHandler);
+	    SAXParser parser = parserFactory.newSAXParser();
+	    SAXParserHandler spHandler = new SAXParserHandler();
+	    spHandler.setContentHandler(this);
+	    if (bResolver != null) {
+	      spHandler.setEntityResolver(bResolver);
+	    }
+	    parser.parse(new InputSource(is), spHandler);
       } else {
-	Parser parser = (Parser) Class.forName(parserClass, true, loader != null ? loader : this.getClass().getClassLoader()).newInstance();
-	parser.setDocumentHandler(this);
-	if (bResolver != null) {
-	  parser.setEntityResolver(bResolver);
-	}
-	parser.parse(new InputSource(is));
+	    XMLReader reader = (XMLReader) Class.forName(parserClass, true, loader != null ? loader : this.getClass().getClassLoader()).getDeclaredConstructor().newInstance();
+	    reader.setContentHandler(this);
+	    if (bResolver != null) {
+	      reader.setEntityResolver(bResolver);
+	    }
+	    reader.parse(new InputSource(is));
       }
     } catch (ClassNotFoundException cnfe) {
       throw new CatalogException(CatalogException.UNPARSEABLE);
@@ -271,16 +271,24 @@ public class SAXCatalogReader implements CatalogReader, ContentHandler, Document
       UnknownHostException uhe = new UnknownHostException();
       FileNotFoundException fnfe = new FileNotFoundException();
       if (e != null) {
-	if (e.getClass() == uhe.getClass()) {
-	  throw new CatalogException(CatalogException.PARSE_FAILED,
+	    if (e.getClass() == uhe.getClass()) {
+	      throw new CatalogException(CatalogException.PARSE_FAILED,
 				     e.toString());
-	} else if (e.getClass() == fnfe.getClass()) {
-	  throw new CatalogException(CatalogException.PARSE_FAILED,
+	    } else if (e.getClass() == fnfe.getClass()) {
+	      throw new CatalogException(CatalogException.PARSE_FAILED,
 				     e.toString());
-	}
+	    }
       }
       throw new CatalogException(se);
-    }
+    } catch (IllegalArgumentException e) {
+      throw new CatalogException(CatalogException.ILLEGAL_ARG);
+	} catch (InvocationTargetException e) {
+      throw new CatalogException(CatalogException.INVOCATION_TARGET);
+	} catch (NoSuchMethodException e) {
+	  throw new CatalogException(CatalogException.NO_SUCH_METHOD);
+	} catch (SecurityException e) {
+      throw new CatalogException(CatalogException.SECURITY);
+	}
   }
 
   // ----------------------------------------------------------------------
@@ -313,6 +321,7 @@ public class SAXCatalogReader implements CatalogReader, ContentHandler, Document
    * <p>The catalog parser is selected based on the namespace of the
    * first element encountered in the catalog.</p>
    */
+  /*
   public void startElement (String name,
 			    AttributeList atts)
     throws SAXException {
@@ -382,6 +391,7 @@ public class SAXCatalogReader implements CatalogReader, ContentHandler, Document
       saxParser.startElement(name, atts);
     }
   }
+  */
 
   /**
    * The SAX2 <code>startElement</code> method.
@@ -417,7 +427,7 @@ public class SAXCatalogReader implements CatalogReader, ContentHandler, Document
 
       try {
 	saxParser = (SAXCatalogParser)
-	  Class.forName(saxParserClass, true, loader != null ? loader : this.getClass().getClassLoader()).newInstance();
+	  Class.forName(saxParserClass, true, loader != null ? loader : this.getClass().getClassLoader()).getDeclaredConstructor().newInstance();
 
 	saxParser.setCatalog(catalog);
 	saxParser.startDocument();
@@ -438,18 +448,36 @@ public class SAXCatalogReader implements CatalogReader, ContentHandler, Document
 	saxParser = null;
 	abandonHope = true;
 	debug.message(2, cce.toString());
-      }
+      } catch (IllegalArgumentException e) {
+    		saxParser = null;
+    		abandonHope = true;
+    		debug.message(2, e.toString());
+	} catch (InvocationTargetException e) {
+		saxParser = null;
+		abandonHope = true;
+		debug.message(2, e.toString());
+	} catch (NoSuchMethodException e) {
+		saxParser = null;
+		abandonHope = true;
+		debug.message(2, e.toString());
+	} catch (SecurityException e) {
+		saxParser = null;
+		abandonHope = true;
+		debug.message(2, e.toString());
+	}
     } else {
       saxParser.startElement(namespaceURI, localName, qName, atts);
     }
   }
 
   /** The SAX <code>endElement</code> method. Does nothing. */
+  /*
   public void endElement (String name) throws SAXException {
     if (saxParser != null) {
       saxParser.endElement(name);
     }
   }
+  */
 
   /** The SAX2 <code>endElement</code> method. Does nothing. */
   public void endElement (String namespaceURI,

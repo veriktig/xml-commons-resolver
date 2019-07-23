@@ -1,3 +1,4 @@
+// Copyright 2019 Fred Gotwald. Modifications to original.
 // Resolver.java - Represents an extension of OASIS Open Catalog files.
 
 /*
@@ -20,7 +21,6 @@
 package org.apache.xml.resolver;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.FileNotFoundException;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -160,7 +160,7 @@ public class Resolver extends Catalog {
       return resolved;
     }
 
-    Enumeration en = catalogEntries.elements();
+    Enumeration<?> en = catalogEntries.elements();
     while (en.hasMoreElements()) {
       CatalogEntry e = (CatalogEntry) en.nextElement();
       if (e.getEntryType() == RESOLVER) {
@@ -217,7 +217,7 @@ public class Resolver extends Catalog {
       return resolved;
     }
 
-    Enumeration en = catalogEntries.elements();
+    Enumeration<?> en = catalogEntries.elements();
     while (en.hasMoreElements()) {
       CatalogEntry e = (CatalogEntry) en.nextElement();
       if (e.getEntryType() == RESOLVER) {
@@ -279,7 +279,7 @@ public class Resolver extends Catalog {
       return resolved;
     }
 
-    Enumeration en = catalogEntries.elements();
+    Enumeration<?> en = catalogEntries.elements();
     while (en.hasMoreElements()) {
       CatalogEntry e = (CatalogEntry) en.nextElement();
       if (e.getEntryType() == RESOLVER) {
@@ -353,12 +353,9 @@ public class Resolver extends Catalog {
 				     String command,
 				     String arg1,
 				     String arg2) {
-	InputStream iStream = null;
 	String RFC2483 = resolver + "?command=" + command 
 	    + "&format=tr9401&uri=" + arg1 
 	    + "&uri2=" + arg2;
-	String line = null;
-
 	try {
 	    URL url = new URL(RFC2483);
 
@@ -402,7 +399,7 @@ public class Resolver extends Catalog {
      * @param appvec The vector to be appended
      * @return The vector vec, with appvec's elements appended to it
      */
-    private Vector appendVector(Vector vec, Vector appvec) {
+    private Vector<String> appendVector(Vector<String> vec, Vector<String> appvec) {
 	if (appvec != null) {
 	    for (int count = 0; count < appvec.size(); count++) {
 		vec.addElement(appvec.elementAt(count));
@@ -418,18 +415,18 @@ public class Resolver extends Catalog {
      *
      * @return A vector of URNs that map to the systemId.
      */
-    public Vector resolveAllSystemReverse(String systemId)
+    public Vector<String> resolveAllSystemReverse(String systemId)
 	throws MalformedURLException, IOException {
-	Vector resolved = new Vector();
+	Vector<String> resolved = new Vector<String>();
 
 	// If there's a SYSTEM entry in this catalog, use it
 	if (systemId != null) {
-	    Vector localResolved = resolveLocalSystemReverse(systemId);
+	    Vector<String> localResolved = resolveLocalSystemReverse(systemId);
 	    resolved = appendVector(resolved, localResolved);
 	}
 
 	// Otherwise, look in the subordinate catalogs
-	Vector subResolved = resolveAllSubordinateCatalogs(SYSTEMREVERSE,
+	Vector<String> subResolved = resolveAllSubordinateCatalogs(SYSTEMREVERSE,
 							   null,
 							   null,
 							   systemId);
@@ -446,7 +443,7 @@ public class Resolver extends Catalog {
      */
     public String resolveSystemReverse(String systemId)
 	throws MalformedURLException, IOException {
-	Vector resolved = resolveAllSystemReverse(systemId);
+	Vector<String> resolved = resolveAllSystemReverse(systemId);
 	if (resolved != null && resolved.size() > 0) {
 	    return (String) resolved.elementAt(0);
 	} else {
@@ -481,18 +478,18 @@ public class Resolver extends Catalog {
      * subordinate catalog cannot be turned into a valid URL.
      * @throws IOException Error reading subordinate catalog file.
      */
-    public Vector resolveAllSystem(String systemId)
+    public Vector<String> resolveAllSystem(String systemId)
 	throws MalformedURLException, IOException {
-	Vector resolutions = new Vector();
+	Vector<String> resolutions = new Vector<String>();
 
 	// If there are SYSTEM entries in this catalog, start with them
 	if (systemId != null) {
-	    Vector localResolutions = resolveAllLocalSystem(systemId);
+	    Vector<String> localResolutions = resolveAllLocalSystem(systemId);
 	    resolutions = appendVector(resolutions, localResolutions);
 	}
 
 	// Then look in the subordinate catalogs
-	Vector subResolutions = resolveAllSubordinateCatalogs(SYSTEM,
+	Vector<String> subResolutions = resolveAllSubordinateCatalogs(SYSTEM,
 							      null,
 							      null,
 							      systemId);
@@ -516,11 +513,11 @@ public class Resolver extends Catalog {
      *
      * @return A vector of the mapped system identifiers or null
      */
-    private Vector resolveAllLocalSystem(String systemId) {
-	Vector map = new Vector();
+    private Vector<String> resolveAllLocalSystem(String systemId) {
+	Vector<String> map = new Vector<String>();
 	String osname = System.getProperty("os.name");
 	boolean windows = (osname.indexOf("Windows") >= 0);
-	Enumeration en = catalogEntries.elements();
+	Enumeration<?> en = catalogEntries.elements();
 	while (en.hasMoreElements()) {
 	    CatalogEntry e = (CatalogEntry) en.nextElement();
 	    if (e.getEntryType() == SYSTEM
@@ -544,11 +541,11 @@ public class Resolver extends Catalog {
      *
      * @return A vector of URNs that map to the systemId.
      */
-    private Vector resolveLocalSystemReverse(String systemId) {
-	Vector map = new Vector();
+    private Vector<String> resolveLocalSystemReverse(String systemId) {
+	Vector<String> map = new Vector<String>();
 	String osname = System.getProperty("os.name");
 	boolean windows = (osname.indexOf("Windows") >= 0);
-	Enumeration en = catalogEntries.elements();
+	Enumeration<?> en = catalogEntries.elements();
 	while (en.hasMoreElements()) {
 	    CatalogEntry e = (CatalogEntry) en.nextElement();
 	    if (e.getEntryType() == SYSTEM
@@ -593,13 +590,13 @@ public class Resolver extends Catalog {
      * match is not found in the catalog, instead null is returned
      * to indicate that no match was found.
      */
-    private synchronized Vector resolveAllSubordinateCatalogs(int entityType,
+    private synchronized Vector<String> resolveAllSubordinateCatalogs(int entityType,
 					      String entityName,
 					      String publicId,
 					      String systemId)
 	throws MalformedURLException, IOException {
 
-	Vector resolutions = new Vector();
+	Vector<String> resolutions = new Vector<String>();
 
 	for (int catPos = 0; catPos < catalogs.size(); catPos++) {
 	    Resolver c = null;
@@ -669,11 +666,11 @@ public class Resolver extends Catalog {
 		    return resolutions;
 		}
 	    } else if (entityType == SYSTEM) {
-		Vector localResolutions = c.resolveAllSystem(systemId);
+		Vector<String> localResolutions = c.resolveAllSystem(systemId);
 		resolutions = appendVector(resolutions, localResolutions);
 		break;
 	    } else if (entityType == SYSTEMREVERSE) {
-		Vector localResolutions = c.resolveAllSystemReverse(systemId);
+		Vector<String> localResolutions = c.resolveAllSystemReverse(systemId);
 		resolutions = appendVector(resolutions, localResolutions);
 	    }
 	}

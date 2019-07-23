@@ -1,3 +1,4 @@
+// Copyright 2019 Fred Gotwald. Modifications to original.
 // OASISXMLCatalogReader.java - Read XML Catalog files
 
 /*
@@ -54,9 +55,9 @@ public class OASISXMLCatalogReader extends SAXCatalogReader implements SAXCatalo
   /** The namespace name of OASIS ERTC TR9401 catalog extension */
   public static final String tr9401NamespaceName = "urn:oasis:names:tc:entity:xmlns:tr9401:catalog";
 
-  protected Stack baseURIStack = new Stack();
-  protected Stack overrideStack = new Stack();
-  protected Stack namespaceStack = new Stack();
+  protected Stack<String> baseURIStack = new Stack<String>();
+  protected Stack<String> overrideStack = new Stack<String>();
+  protected Stack<String> namespaceStack = new Stack<String>();
 
   /** Set the current catalog. */
   public void setCatalog (Catalog catalog) {
@@ -89,7 +90,7 @@ public class OASISXMLCatalogReader extends SAXCatalogReader implements SAXCatalo
   protected boolean inExtensionNamespace() {
     boolean inExtension = false;
 
-    Enumeration elements = namespaceStack.elements();
+    Enumeration<String> elements = namespaceStack.elements();
     while (!inExtension && elements.hasMoreElements()) {
       String ns = (String) elements.nextElement();
       if (ns == null) {
@@ -144,7 +145,7 @@ public class OASISXMLCatalogReader extends SAXCatalogReader implements SAXCatalo
     throws SAXException {
 
     int entryType = -1;
-    Vector entryArgs = new Vector();
+    Vector<String> entryArgs = new Vector<String>();
 
     namespaceStack.push(namespaceURI);
 
@@ -174,7 +175,7 @@ public class OASISXMLCatalogReader extends SAXCatalogReader implements SAXCatalo
 	}
 
 	entryType = -1;
-	entryArgs = new Vector();
+	entryArgs = new Vector<String>();
 
       } else {
 	baseURIStack.push(baseURIStack.peek());
@@ -213,7 +214,7 @@ public class OASISXMLCatalogReader extends SAXCatalogReader implements SAXCatalo
 	}
 
 	entryType = -1;
-	entryArgs = new Vector();
+	entryArgs = new Vector<String>();
 
       } else {
 	overrideStack.push(overrideStack.peek());
@@ -373,21 +374,21 @@ public class OASISXMLCatalogReader extends SAXCatalogReader implements SAXCatalo
 	}
 
 	entryType = -1;
-	entryArgs = new Vector();
+	entryArgs = new Vector<String>();
 
       } else {
 	baseURIStack.push(baseURIStack.peek());
       }
 
       if (localName.equals("doctype")) {
-	entryType = catalog.DOCTYPE;
+	entryType = Catalog.DOCTYPE;
 	entryArgs.add(atts.getValue("name"));
 	entryArgs.add(atts.getValue("uri"));
       } else if (localName.equals("document")) {
-	entryType = catalog.DOCUMENT;
+	entryType = Catalog.DOCUMENT;
 	entryArgs.add(atts.getValue("uri"));
       } else if (localName.equals("dtddecl")) {
-	entryType = catalog.DTDDECL;
+	entryType = Catalog.DTDDECL;
 	entryArgs.add(atts.getValue("publicId"));
 	entryArgs.add(atts.getValue("uri"));
       } else if (localName.equals("entity")) {
@@ -448,7 +449,7 @@ public class OASISXMLCatalogReader extends SAXCatalogReader implements SAXCatalo
     throws SAXException {
 
     int entryType = -1;
-    Vector entryArgs = new Vector();
+    Vector<String> entryArgs = new Vector<String>();
 
     boolean inExtension = inExtensionNamespace();
 
@@ -461,7 +462,7 @@ public class OASISXMLCatalogReader extends SAXCatalogReader implements SAXCatalo
       String baseURI = (String) baseURIStack.peek();
 
       if (!baseURI.equals(popURI)) {
-	entryType = catalog.BASE;
+	entryType = Catalog.BASE;
 	entryArgs.add(baseURI);
 
 	debug.message(4, "(reset) xml:base", baseURI);
@@ -486,7 +487,7 @@ public class OASISXMLCatalogReader extends SAXCatalogReader implements SAXCatalo
 	String override = (String) overrideStack.peek();
 
 	if (!override.equals(popOverride)) {
-	  entryType = catalog.OVERRIDE;
+	  entryType = Catalog.OVERRIDE;
 	  entryArgs.add(override);
 	  overrideStack.push(override);
 

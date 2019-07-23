@@ -1,3 +1,4 @@
+// Copyright 2019 Fred Gotwald. Modifications to original.
 // ResolvingXMLReader.java - An XMLReader that performs catalog resolution
 
 /*
@@ -18,8 +19,6 @@
  */
 
 package org.apache.xml.resolver.tools;
-
-import org.xml.sax.*;
 
 import javax.xml.parsers.*;
 

@@ -1,3 +1,4 @@
+// Copyright 2019 Fred Gotwald. Modifications to original.
 // CatalogResolver.java - A SAX EntityResolver/JAXP URI Resolver
 
 /*
@@ -229,11 +230,9 @@ public class CatalogResolver implements EntityResolver, URIResolver {
     throws TransformerException {
 
     String uri = href;
-    String fragment = null;
     int hashPos = href.indexOf("#");
     if (hashPos >= 0) {
       uri = href.substring(0, hashPos);
-      fragment = href.substring(hashPos+1);
     }
 
     String result = null;

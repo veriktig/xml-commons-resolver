@@ -1,3 +1,4 @@
+// Copyright 2019 Fred Gotwald. Modifications to original.
 // SAXCatalogParser.java - An interface for reading catalog files
 
 /*
@@ -36,7 +37,7 @@ import org.xml.sax.*;
  *
  * @version 1.0
  */
-public interface SAXCatalogParser extends ContentHandler, DocumentHandler {
+public interface SAXCatalogParser extends ContentHandler {
     /** Set the Catalog for which parsing is being performed. */
     public void setCatalog(Catalog catalog);
 }

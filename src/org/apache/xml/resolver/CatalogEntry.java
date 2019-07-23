@@ -1,3 +1,4 @@
+// Copyright 2019 Fred Gotwald. Modifications to original.
 // CatalogEntry.java - Represents Catalog entries
 
 /*
@@ -57,11 +58,11 @@ public class CatalogEntry {
    * (e.g., 'BASE' or 'SYSTEM') to their type (1, 2, etc.).
    * Names are case sensitive.
    */
-  protected static Hashtable entryTypes = new Hashtable();
+  protected static Hashtable<String, Integer> entryTypes = new Hashtable<String, Integer>();
 
   /** The entryTypes vector maps catalog entry types to the
       number of arguments they're required to have. */
-  protected static Vector entryArgs = new Vector();
+  protected static Vector<Integer> entryArgs = new Vector<Integer>();
 
   /**
    * Adds a new catalog entry type.
@@ -75,8 +76,8 @@ public class CatalogEntry {
    * @return The type for the new entry.
    */
   public static int addEntryType(String name, int numArgs) {
-    entryTypes.put(name, new Integer(nextEntry));
-    entryArgs.add(nextEntry, new Integer(numArgs));
+    entryTypes.put(name, Integer.valueOf(nextEntry));
+    entryArgs.add(nextEntry, Integer.valueOf(numArgs));
     nextEntry++;
 
     return nextEntry-1;
@@ -139,7 +140,7 @@ public class CatalogEntry {
   protected int entryType = 0;
 
   /** The arguments associated with this entry */
-  protected Vector args = null;
+  protected Vector<String> args = null;
 
   /**
    * Null constructor; something for subclasses to call.
@@ -156,7 +157,7 @@ public class CatalogEntry {
    * @throws InvalidCatalogEntryException if the wrong number of arguments
    * is passed.
    */
-  public CatalogEntry(String name, Vector args)
+  public CatalogEntry(String name, Vector<String> args)
     throws CatalogException {
     Integer iType = (Integer) entryTypes.get(name);
 
@@ -189,7 +190,7 @@ public class CatalogEntry {
    * @throws InvalidCatalogEntryException if the wrong number of arguments
    * is passed.
    */
-  public CatalogEntry(int type, Vector args)
+  public CatalogEntry(int type, Vector<String> args)
     throws CatalogException {
     try {
       Integer iArgs = (Integer) entryArgs.get(type);

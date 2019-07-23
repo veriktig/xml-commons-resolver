@@ -1,3 +1,4 @@
+// Copyright 2019 Fred Gotwald. Modifications to original.
 // CatalogException.java - Catalog exception
 
 /*
@@ -33,6 +34,8 @@ package org.apache.xml.resolver;
  * @version 1.0
  */
 public class CatalogException extends Exception {
+  /** Add a default */
+  private static final long serialVersionUID = 1L;
   /** A wrapper around another exception */
   public static final int WRAPPER = 1;
   /** An invalid entry */
@@ -49,6 +52,14 @@ public class CatalogException extends Exception {
   public static final int PARSE_FAILED = 7;
   /** Text catalog ended in mid-comment */
   public static final int UNENDED_COMMENT = 8;
+  /** Illegal argument to class */
+  public static final int ILLEGAL_ARG = 9;
+  /** Invocation target error */
+  public static final int INVOCATION_TARGET = 10;
+  /** No such method */
+  public static final int NO_SUCH_METHOD = 11;
+  /** Security error */
+  public static final int SECURITY = 12;
 
   /**
    * The embedded exception if tunnelling, or null.

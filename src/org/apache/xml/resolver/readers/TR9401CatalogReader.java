@@ -1,3 +1,4 @@
+// Copyright 2019 Fred Gotwald. Modifications to original.
 // TR9401CatalogReader.java - Read OASIS Catalog files
 
 /*
@@ -74,7 +75,7 @@ public class TR9401CatalogReader extends TextCatalogReader {
       return;
     }
 
-    Vector unknownEntry = null;
+    Vector<String> unknownEntry = null;
 
     try {
       while (true) {
@@ -104,7 +105,7 @@ public class TR9401CatalogReader extends TextCatalogReader {
 	try {
 	  int type = CatalogEntry.getEntryType(entryToken);
 	  int numArgs = CatalogEntry.getEntryArgCount(type);
-	  Vector args = new Vector();
+	  Vector<String> args = new Vector<String>();
 
 	  if (unknownEntry != null) {
 	    catalog.unknownEntry(unknownEntry);
@@ -119,7 +120,7 @@ public class TR9401CatalogReader extends TextCatalogReader {
 	} catch (CatalogException cex) {
 	  if (cex.getExceptionType() == CatalogException.INVALID_ENTRY_TYPE) {
 	    if (unknownEntry == null) {
-	      unknownEntry = new Vector();
+	      unknownEntry = new Vector<String>();
 	    }
 	    unknownEntry.addElement(token);
 	  } else if (cex.getExceptionType() == CatalogException.INVALID_ENTRY) {
