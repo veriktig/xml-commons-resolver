@@ -5,5 +5,5 @@ module resolver {
 	exports org.apache.xml.resolver.readers;
 	exports org.apache.xml.resolver.tools;
 
-	requires java.xml;
+	requires transitive java.xml;
 }
